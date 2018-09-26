@@ -81,7 +81,7 @@ if __name__ == "__main__" :
             
         except KeyboardInterrupt :
             
-            print ( "Bye!" )
+            print ( "\nBye!" )
             moody.close()
             running = False
 

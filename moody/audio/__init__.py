@@ -16,6 +16,7 @@ from threading import Semaphore
 from .structures import AudioChunk, ChunkWindow
 
 SILENCE_CHECK_DURATION = 5 #seconds
+WAIT_TIME = 2 #seconds
 
 class MoodyAudio () :
     
@@ -57,17 +58,28 @@ class MoodyAudio () :
         
         self.stream.start_stream()            
 
-        min_energy_value = float("inf")
+        max_energy_value = -float("inf")
         
-        for _ in range ( 0, int ( self.sample_rate / self.chunk_size * SILENCE_CHECK_DURATION ) ) :
+        #We count the frames recorded, and ignore the the ones read in the first 1.5 seconds
+        #as they contain transient-like behaviour that we don't want to record
+        
+        frame_counter = 0
+        
+        for _ in range ( 0, int ( self.sample_rate / self.chunk_size * SILENCE_CHECK_DURATION + WAIT_TIME ) ) :
             
             try :
                 
-                frame_energy = AudioChunk ( self.stream.read ( self.chunk_size ), self.format ).rms( db = True )
+                self.stream.read ( self.chunk_size )
+                frame_counter += 1
                 
-                if frame_energy < min_energy_value :
+                if frame_counter >= ( self.sample_rate / self.chunk_size * WAIT_TIME ) :
+                
+                    frame_energy = AudioChunk ( self.stream.read ( self.chunk_size ), self.format ).rms( db = True )
+                    print ( frame_energy )
                     
-                    min_energy_value = frame_energy
+                    if frame_energy > max_energy_value :
+                        
+                        max_energy_value = frame_energy
             
             except Exception as e :
                 
@@ -79,7 +91,7 @@ class MoodyAudio () :
                 raise Exception (" An error occurred while reading the silence energy levels! ")
         
         self.stream.stop_stream()
-        self.silence_threshold = min_energy_value + 10
+        self.silence_threshold = max_energy_value
         
         print ( self.silence_threshold )
        
