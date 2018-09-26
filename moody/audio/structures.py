@@ -5,9 +5,9 @@ Created on 25 set 2018
 
 '''
 
+import pyaudio
 import numpy as np
 from enum import Enum
-import moody.audio as ma
 import moody.audio.util as util
 
 HUMAN_HEARING_LOWER_BOUND = 110 #Hz
@@ -49,9 +49,9 @@ class AudioChunk ():
         
         '''
         
-        list_from_chunk = np.frombuffer ( self.chunk, ma.pyaudio_to_numpy_format( self.format ) )
+        list_from_chunk = np.frombuffer ( self.chunk, pyaudio_to_numpy_format( self.format ) )
         
-        list_from_chunk = list_from_chunk /  np.iinfo( ma.pyaudio_to_numpy_format( self.format ) ).max 
+        list_from_chunk = list_from_chunk /  np.iinfo( pyaudio_to_numpy_format( self.format ) ).max 
      
         rms = np.sqrt ( np.mean ( np.square ( list_from_chunk ) ) )
     
@@ -147,4 +147,25 @@ class ChunkWindow ( list ) :
             
         return b"".join( string )
 
+
+def pyaudio_to_numpy_format ( pyaudio_format ) :
+   
+    '''
     
+    Quick function to convert the pyaudio formats to the numpy ones
+   
+    '''
+   
+    if pyaudio_format == pyaudio.paInt32 :
+   
+        return np.int32
+       
+    elif pyaudio_format == pyaudio.paInt16 :
+       
+        return np.int16
+       
+    elif pyaudio_format == pyaudio.paInt8 :
+       
+        return np.int8
+               
+    raise Exception ( "Formato non valido!" )        

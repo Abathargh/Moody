@@ -124,25 +124,4 @@ class MoodyAudio () :
     def close ( self ) :
         
         self.audio.terminate()
-        
-def pyaudio_to_numpy_format ( pyaudio_format ) :
-   
-    '''
-    
-    Quick function to convert the pyaudio formats to the numpy ones
-   
-    '''
-   
-    if pyaudio_format == pyaudio.paInt32 :
-   
-        return np.int32
-       
-    elif pyaudio_format == pyaudio.paInt16 :
-       
-        return np.int16
-       
-    elif pyaudio_format == pyaudio.paInt8 :
-       
-        return np.int8
-               
-    raise Exception ( "Formato non valido!" )        
+            
