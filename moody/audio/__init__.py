@@ -75,7 +75,6 @@ class MoodyAudio () :
                 if frame_counter >= ( self.sample_rate / self.chunk_size * WAIT_TIME ) :
                 
                     frame_energy = AudioChunk ( self.stream.read ( self.chunk_size ), self.format ).rms( db = True )
-                    print ( frame_energy )
                     
                     if frame_energy > max_energy_value :
                         
@@ -93,7 +92,6 @@ class MoodyAudio () :
         self.stream.stop_stream()
         self.silence_threshold = max_energy_value
         
-        print ( self.silence_threshold )
        
     def listen ( self ) :
         

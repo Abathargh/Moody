@@ -6,6 +6,7 @@ import pyaudio
 from pkg_resources import Requirement, resource_filename
 
 from moody.audio import MoodyAudio
+from moody.audio.util import average, differences
 
 '''
 
@@ -36,7 +37,7 @@ parser.add_argument ( "--samplerate", "-r", help = "The sample rate, defaults to
 parser.add_argument ( "--windowsize", "-w", help = "The size of the audio analysis window, where every element is a frame", type = int, default = int ( config["Analysis"]["WINDOW_SIZE"] ) )
 parser.add_argument ( "--silencerate", "-sr", help = "The minimum amount of zero energy frames in a window for it to be considered silence", type = float, default = float ( config["Analysis"]["SILENCE_RATE"] ) )
 parser.add_argument ( "--musicthresh", "-mt", help = "The value under which the difference between peaks is small enough to be considered music", type = float, default = float ( config["Analysis"]["MUSIC_THRESHOLD"] ) )
-
+parser.add_argument ( "--verbose", "-v", help = "If verbose is True, the programs print information on the energy level of every frame analyzed", action = "store_true" )
 args = parser.parse_args()
 
 
@@ -46,7 +47,7 @@ SAMPLE_RATE = args.samplerate
 WINDOW_SIZE = args.windowsize
 SILENCE_RATE = args.silencerate
 MUSIC_THRESHOLD = args.musicthresh
-
+VERBOSE = args.verbose
 
 if args.format == "int32" :
     
@@ -72,12 +73,31 @@ if __name__ == "__main__" :
     moody = MoodyAudio ( audio_format = FORMAT, chunk_size = CHUNK_SIZE, sample_rate = SAMPLE_RATE, window_size = WINDOW_SIZE )
     running = True
     
+    moody.set_silence_threshold()
+    
+    if VERBOSE :
+        
+        print ( "Silence threshold: "+ str ( moody.silence_threshold ) + " dB" )
+    
     while running :
         
         try :
             
             data_window = moody.listen()
-            print ( data_window.audio_type( SILENCE_RATE, moody.silence_threshold, MUSIC_THRESHOLD ) )
+            data_type = str ( data_window.audio_type( SILENCE_RATE, moody.silence_threshold, MUSIC_THRESHOLD ) )
+            
+            if VERBOSE :
+                
+                db_data = [ chunk.rms ( db = True ) for chunk in data_window ]
+                zero_energy_frames = int ( [ 0 if rms_value < moody.silence_threshold else rms_value for rms_value in db_data ].count ( 0 ) )
+                average_difference_db = float ( average ( differences( db_data ) ) )
+                
+                print ( "%d, %f dB, %s "
+                       % (zero_energy_frames, average_difference_db, data_type) )
+                
+            else :
+            
+                print ( "Audio type: %s" % data_type )
             
         except KeyboardInterrupt :
             

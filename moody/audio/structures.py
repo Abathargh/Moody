@@ -7,16 +7,15 @@ Created on 25 set 2018
 
 import pyaudio
 import numpy as np
-from enum import Enum
 from .util import average, differences
 
 HUMAN_HEARING_LOWER_BOUND = 110 #Hz
 
-class Type ( Enum ):
+class Type ():
     
-    SILENCE = 0
-    SPEECH = 1
-    MUSIC = 2
+    SILENCE = "Silence"
+    SPEECH = "Speech"
+    MUSIC = "Music"
     
 
 class AudioChunk ():
@@ -123,11 +122,10 @@ class ChunkWindow ( list ) :
         if self.audio_type_strategy == None :
             
             db_data = [ chunk.rms ( db = True ) for chunk in self ]
-            print ( str([ 0 if rms_value < silence_threshold else rms_value for rms_value in db_data ].count ( 0 )) +" " + str( average ( differences( db_data ) ) ) )
             
             if [ 0 if rms_value < silence_threshold else rms_value for rms_value in db_data ].count ( 0 ) >= len( db_data ) * silence_rate : return Type.SILENCE
             
-            if  average ( differences( db_data ) ) <= music_threshold :
+            if  round ( average ( differences( db_data ) ), 1 ) <= music_threshold :
                 
                 return Type.MUSIC
             
