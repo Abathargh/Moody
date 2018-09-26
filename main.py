@@ -5,7 +5,7 @@ import configparser
 import pyaudio
 from pkg_resources import Requirement, resource_filename
 
-import moody.audio as moody
+from moody.audio import MoodyAudio
 
 '''
 
@@ -69,7 +69,7 @@ else :
     
 if __name__ == "__main__" :
     
-    moody = moody.MoodyAudio ( audio_format = FORMAT, chunk_size = CHUNK_SIZE, sample_rate = SAMPLE_RATE, window_size = WINDOW_SIZE )
+    moody = MoodyAudio ( audio_format = FORMAT, chunk_size = CHUNK_SIZE, sample_rate = SAMPLE_RATE, window_size = WINDOW_SIZE )
     running = True
     
     while running :
