@@ -13,7 +13,7 @@ import pyaudio
 import numpy as np
 from threading import Semaphore
 
-from moody.audio.structures import AudioChunk, ChunkWindow
+from .structures import AudioChunk, ChunkWindow
 
 SILENCE_CHECK_DURATION = 5 #seconds
 

@@ -8,7 +8,7 @@ Created on 25 set 2018
 import pyaudio
 import numpy as np
 from enum import Enum
-import moody.audio.util as util
+from .util import average, differences
 
 HUMAN_HEARING_LOWER_BOUND = 110 #Hz
 
@@ -123,11 +123,11 @@ class ChunkWindow ( list ) :
         if self.audio_type_strategy == None :
             
             db_data = [ chunk.rms ( db = True ) for chunk in self ]
-            print ( str([ 0 if rms_value < silence_threshold else rms_value for rms_value in db_data ].count ( 0 )) +" " + str( util.average ( util.differences( db_data ) ) ) )
+            print ( str([ 0 if rms_value < silence_threshold else rms_value for rms_value in db_data ].count ( 0 )) +" " + str( average ( differences( db_data ) ) ) )
             
             if [ 0 if rms_value < silence_threshold else rms_value for rms_value in db_data ].count ( 0 ) >= len( db_data ) * silence_rate : return Type.SILENCE
             
-            if  util.average ( util.differences( db_data ) ) <= music_threshold :
+            if  average ( differences( db_data ) ) <= music_threshold :
                 
                 return Type.MUSIC
             
