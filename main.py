@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import argparse
 import configparser
 import pyaudio
@@ -77,7 +75,7 @@ if __name__ == "__main__" :
     
     if VERBOSE :
         
-        print ( "Silence threshold: "+ str ( moody.silence_threshold ) + " dB" )
+        print ( "Silence threshold: %f dB" % moody.silence_threshold )
     
     while running :
         
@@ -92,16 +90,15 @@ if __name__ == "__main__" :
                 zero_energy_frames = int ( [ 0 if rms_value < moody.silence_threshold else rms_value for rms_value in db_data ].count ( 0 ) )
                 average_difference_db = float ( average ( differences( db_data ) ) )
                 
-                print ( "%d, %f dB, %s "
-                       % (zero_energy_frames, average_difference_db, data_type) )
+                print ( "%d, %f dB, %s " % ( zero_energy_frames, average_difference_db, data_type ) )
                 
             else :
             
                 print ( "Audio type: %s" % data_type )
             
         except KeyboardInterrupt :
-            
-            print ( "\nBye!" )
+        
             moody.close()
             running = False
 
+    print ( "\nBye!" )

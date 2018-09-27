@@ -5,6 +5,7 @@ Created on 25 set 2018
 
 '''
 
+
 def differences ( l ) :
    
     diff = []

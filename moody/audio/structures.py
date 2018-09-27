@@ -35,9 +35,13 @@ class AudioChunk ():
         
         self.frequency = frequency_strategy
         
+        self.energy = None
+        self.freq = None
+        
         
         
     def rms ( self, db = False ) :
+        
         
         '''
         
