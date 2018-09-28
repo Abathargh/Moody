@@ -10,10 +10,33 @@ Main audio package
 
 import configparser
 import pyaudio
+import logging
+import datetime
+import pathlib
 import numpy as np
 from threading import Semaphore
 
 from .structures import AudioChunk, ChunkWindow
+
+    
+#Generate date and time of execution for logging purposes
+now = datetime.datetime.now()
+formatted_date = "{}_{}_{}-{}_{}_{}".format( now.day, now.month, now.year, now.hour, now.minute, now.second )
+
+pathlib.Path ( "./moody/stats/" ).mkdir ( parents = True, exist_ok = True ) 
+
+
+logger = logging.getLogger( __name__ )
+logger.setLevel ( logging.DEBUG )
+
+file_handler = logging.FileHandler ( "./moody/stats/audio-{}.log".format( formatted_date ) )
+formatter = logging.Formatter ( "%(asctime)s - %(name)s - %(levelname)s : %(message)s" )
+file_handler.setFormatter( formatter )
+file_handler.setLevel( logging.DEBUG )
+logger.addHandler ( file_handler )
+
+stream_handler = logging.StreamHandler()
+logger.addHandler ( stream_handler )
 
 SILENCE_CHECK_DURATION = 5 #seconds
 WAIT_TIME = 2 #seconds
@@ -29,6 +52,8 @@ class MoodyAudio () :
     '''
     def __init__ ( self, audio_format, chunk_size, sample_rate, window_size ) :
         
+        self.logger = logging.getLogger( __name__ )
+        
         self.format = audio_format
         self.chunk_size = chunk_size
         self.sample_rate = sample_rate
@@ -40,6 +65,8 @@ class MoodyAudio () :
                              frames_per_buffer = self.chunk_size,
                              input = True,
                              channels = 1 )
+        
+        self.logger.info ( "MoodyAudio on" )
         
         self.silence_threshold = None
     
@@ -54,7 +81,7 @@ class MoodyAudio () :
         
         '''
     
-        print ( "Recording audio to check the silence frames energy level, don't speak for " + str ( SILENCE_CHECK_DURATION ) + " seconds..." )
+        self.logger.info ( "Recording audio to check the silence frames energy level, don't speak for " + str ( SILENCE_CHECK_DURATION ) + " seconds..." )
         
         self.stream.start_stream()            
 
@@ -80,17 +107,17 @@ class MoodyAudio () :
                         
                         max_energy_value = frame_energy
             
-            except Exception as e :
-                
-                print ( e )
-                
+            except :
+                                
                 self.stream.stop_stream()
                 self.audio.terminate()
                 
-                raise Exception (" An error occurred while reading the silence energy levels! ")
-        
+                self.logger.exception (" An error occurred while reading the silence energy levels! ")
+                
+                
         self.stream.stop_stream()
         self.silence_threshold = max_energy_value
+        self.logger.info( "Silence threshold = {} dB".format( self.silence_threshold )  )
         
        
     def listen ( self ) :
@@ -101,13 +128,14 @@ class MoodyAudio () :
         an ChunkList object, which is an extension of the default python type list, containing AudioChunk objects.
         
         '''
+       
+        self.logger.info ( "Recording audio data..." )
         
         if self.silence_threshold == None :
             
             self.set_silence_threshold()
         
         
-        self.stream.start_stream()            
         
         data =  ChunkWindow()
         running = True
@@ -115,6 +143,9 @@ class MoodyAudio () :
         
         while running :
             
+                
+            self.stream.start_stream()            
+
             chunk = self.stream.read ( self.chunk_size )
 
             data.append ( AudioChunk ( chunk , self.format ) ) 
@@ -125,13 +156,14 @@ class MoodyAudio () :
             if counter == self.window_size :
             
                 running = False
-    
+            
         self.stream.stop_stream()
-    
+
     
         return data
     
     def close ( self ) :
         
         self.audio.terminate()
+        self.logger.info ( "MoodyAudio off" )
             

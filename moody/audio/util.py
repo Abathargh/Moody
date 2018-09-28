@@ -5,7 +5,6 @@ Created on 25 set 2018
 
 '''
 
-
 def differences ( l ) :
    
     diff = []
@@ -15,10 +14,12 @@ def differences ( l ) :
         
         diff.append( abs ( l [ c + 1 ] - l [ c ] ) )
         c += 1
-        
+    
     return diff
 
  
 def average ( l ) :
     
-    return sum(l)/len(l)
+    avg = sum ( l ) / len ( l )
+    
+    return avg

@@ -5,17 +5,25 @@ Created on 25 set 2018
 
 '''
 
+import logging
 import pyaudio
 import numpy as np
+from enum import Enum
+
 from .util import average, differences
 
 HUMAN_HEARING_LOWER_BOUND = 110 #Hz
 
-class Type ():
+#This makes numpy raise exception instead of printing warnings in the case an error appears
+np.seterr( all = "raise" )
+
+logger = logging.getLogger( __name__ )
+
+class Type ( Enum ):
     
-    SILENCE = "Silence"
-    SPEECH = "Speech"
-    MUSIC = "Music"
+    SILENCE = 0
+    SPEECH = 1
+    MUSIC = 2
     
 
 class AudioChunk ():
@@ -29,7 +37,9 @@ class AudioChunk ():
 
 
     def __init__( self, chunk, audio_format, frequency_strategy = None ):
-
+        
+        self.logger = logging.getLogger( __name__ )
+        
         self.chunk = chunk 
         self.format = audio_format
         
@@ -61,8 +71,20 @@ class AudioChunk ():
     
         if db :
             
-            return 20 * np.log10 ( rms )
-        
+            rms_db = 0
+            
+            try :
+            
+                rms_db = 20 * np.log10 ( rms )
+            
+            except :
+                
+                self.logger.error ( "Log of a negative number attempted, value not expected = {}".format( rms ) )
+            
+            else:
+                
+                return rms_db
+             
         return rms
     
     def frequency ( self, framerate ) :
@@ -74,21 +96,24 @@ class AudioChunk ():
         by Justin Peel
         
         '''
+        try :
+            
+            window = np.blackman ( len( self.chunk ) / self.sample_width )
+            indata = np.array( np.frombuffer( self.chunk, self.format ) ) * window
+    
+            
+            fftData = abs ( np.fft.rfft ( indata ) ) ** 2
+            which = fftData[ 1: ].argmax() + 1
+            
+            
+            y0, y1, y2 = np.log ( fftData[ which-1 : which+2 : ] )
+            x1 = ( y2 - y0 ) * .5 / ( 2 * y1 - y2 - y0 )
+            
+            freq = ( which + x1 ) * framerate / ( len( self.chunk ) / self.sample_width )
         
-        window = np.blackman ( len( self.chunk ) / self.sample_width )
-        indata = np.array( np.frombuffer( self.chunk, self.format ) ) * window
-
-        
-        fftData = abs ( np.fft.rfft ( indata ) ) ** 2
-        which = fftData[ 1: ].argmax() + 1
-        
-        
-        y0, y1, y2 = np.log ( fftData[ which-1 : which+2 : ] )
-        x1 = ( y2 - y0 ) * .5 / ( 2 * y1 - y2 - y0 )
-        
-        freq = ( which + x1 ) * framerate / ( len( self.chunk ) / self.sample_width )
-        
-
+        except :
+            
+            self.logger.exception()
         
         return None if freq < HUMAN_HEARING_LOWER_BOUND else freq
     
@@ -119,24 +144,38 @@ class ChunkWindow ( list ) :
         
         super().__init__()
         self.audio_type_strategy = audio_type_strategy
-        
-    
+        self.logger = logging.getLogger( __name__ )
+
+
     def audio_type ( self, silence_rate, silence_threshold, music_threshold ) :
         
         if self.audio_type_strategy == None :
             
             db_data = [ chunk.rms ( db = True ) for chunk in self ]
-            
-            if [ 0 if rms_value < silence_threshold else rms_value for rms_value in db_data ].count ( 0 ) >= len( db_data ) * silence_rate : return Type.SILENCE
-            
-            if  round ( average ( differences( db_data ) ), 1 ) <= music_threshold :
+            zero_energy_frames = [ 0 if rms_value < silence_threshold else rms_value for rms_value in db_data ].count ( 0 )
+                        
+            self.logger.debug ( "Zero energy frames: {} ".format( zero_energy_frames ) )
+
+            if  zero_energy_frames  >= len( db_data ) * silence_rate :
                 
-                return Type.MUSIC
+                self.logger.debug ( "Silence" )
+                return Type.SILENCE
             
+            average_difference_energy = average ( differences( db_data ) )
+            
+            self.logger.debug ( "Average difference in energy: {}".format( average_difference_energy ) )
+            
+            if  round ( average_difference_energy, 1 ) <= music_threshold :
+                
+                self.logger.debug ( "Music" )
+                return Type.MUSIC
+             
+            self.logger.debug ( "Speech/ Audible Noise" )
             return Type.SPEECH  
         
         else :
             
+            self.info ( "Non default strategy chosen: " )
             self.audio_type_strategy ( silence_rate, silence_threshold, music_threshold )    
         
     def to_binary_string( self ):
@@ -170,4 +209,4 @@ def pyaudio_to_numpy_format ( pyaudio_format ) :
        
         return np.int8
                
-    raise Exception ( "Formato non valido!" )        
+    logger.exception( "Invalid format!" )      

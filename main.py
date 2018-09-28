@@ -72,30 +72,14 @@ if __name__ == "__main__" :
     running = True
     
     moody.set_silence_threshold()
-    
-    if VERBOSE :
-        
-        print ( "Silence threshold: %f dB" % moody.silence_threshold )
-    
+ 
     while running :
         
         try :
             
             data_window = moody.listen()
-            data_type = str ( data_window.audio_type( SILENCE_RATE, moody.silence_threshold, MUSIC_THRESHOLD ) )
-            
-            if VERBOSE :
-                
-                db_data = [ chunk.rms ( db = True ) for chunk in data_window ]
-                zero_energy_frames = int ( [ 0 if rms_value < moody.silence_threshold else rms_value for rms_value in db_data ].count ( 0 ) )
-                average_difference_db = float ( average ( differences( db_data ) ) )
-                
-                print ( "%d, %f dB, %s " % ( zero_energy_frames, average_difference_db, data_type ) )
-                
-            else :
-            
-                print ( "Audio type: %s" % data_type )
-            
+            data_type = data_window.audio_type( SILENCE_RATE, moody.silence_threshold, MUSIC_THRESHOLD )
+                        
         except KeyboardInterrupt :
         
             moody.close()
