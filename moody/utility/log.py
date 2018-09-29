@@ -47,6 +47,13 @@ class Logger () :
         
             stream_handler = logging.StreamHandler()
             logger.addHandler ( stream_handler )
+            
+    
+    def setLevel( self, level) :
         
+        #TODO
         
+    def close ( self ) :
+        
+        #TODO
     

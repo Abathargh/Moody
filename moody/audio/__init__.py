@@ -17,12 +17,16 @@ import numpy as np
 from threading import Semaphore
 
 from .structures import AudioChunk, ChunkWindow
-from utility.log import Logger
-    
-logger = Logger( __name__ )
+from ..utility.log import Logger
+
 
 SILENCE_CHECK_DURATION = 5 #seconds
-WAIT_TIME = 2 #seconds
+WAIT_TIME = 2 #seconds    
+
+
+logger = Logger( __name__ )
+
+
 
 class MoodyAudio () :
     
@@ -33,6 +37,7 @@ class MoodyAudio () :
     
     
     '''
+    
     def __init__ ( self, audio_format, chunk_size, sample_rate, window_size ) :
         
         self.logger = logging.getLogger( __name__ )
