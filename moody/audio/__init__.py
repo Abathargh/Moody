@@ -69,7 +69,7 @@ class MoodyAudio () :
         
         '''
     
-        self.logger.info ( "Recording audio to check the silence frames energy level, don't speak for " + str ( SILENCE_CHECK_DURATION ) + " seconds..." )
+        self.logger.info ( "Listening to set the silence threshold..." )
         
         self.stream.start_stream()            
 

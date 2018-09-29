@@ -10,7 +10,7 @@ import pyaudio
 import numpy as np
 from enum import Enum
 
-from ..utility import average, differences
+from moody.utility import average, differences
 
 HUMAN_HEARING_LOWER_BOUND = 110 #Hz
 

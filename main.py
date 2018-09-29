@@ -3,7 +3,7 @@ import configparser
 import pyaudio
 from pkg_resources import Requirement, resource_filename
 
-from moody.audio import MoodyAudio
+import moody.audio as moody
 
 
 '''
@@ -70,9 +70,15 @@ if __name__ == "__main__" :
         
         raise Exception ( "Formato non valido!" )
     
-    moody = MoodyAudio ( audio_format = FORMAT, chunk_size = CHUNK_SIZE, sample_rate = SAMPLE_RATE, window_size = WINDOW_SIZE )
+    if VERBOSE :
+                
+        moody.logger.console( True )
+    
+    moody = moody.MoodyAudio ( audio_format = FORMAT, chunk_size = CHUNK_SIZE, sample_rate = SAMPLE_RATE, window_size = WINDOW_SIZE )
     running = True
     
+    
+    print ( "Recording audio to check the silence frames energy level, don't speak..." )
     moody.set_silence_threshold()
  
     while running :
@@ -81,6 +87,8 @@ if __name__ == "__main__" :
             
             data_window = moody.listen()
             data_type = data_window.audio_type( SILENCE_RATE, moody.silence_threshold, MUSIC_THRESHOLD )
+            
+            
                         
         except KeyboardInterrupt :
         
