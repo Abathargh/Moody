@@ -17,26 +17,9 @@ import numpy as np
 from threading import Semaphore
 
 from .structures import AudioChunk, ChunkWindow
-
+from utility.log import Logger
     
-#Generate date and time of execution for logging purposes
-now = datetime.datetime.now()
-formatted_date = "{}_{}_{}-{}_{}_{}".format( now.day, now.month, now.year, now.hour, now.minute, now.second )
-
-pathlib.Path ( "./moody/stats/" ).mkdir ( parents = True, exist_ok = True ) 
-
-
-logger = logging.getLogger( __name__ )
-logger.setLevel ( logging.DEBUG )
-
-file_handler = logging.FileHandler ( "./moody/stats/audio-{}.log".format( formatted_date ) )
-formatter = logging.Formatter ( "%(asctime)s - %(name)s - %(levelname)s : %(message)s" )
-file_handler.setFormatter( formatter )
-file_handler.setLevel( logging.DEBUG )
-logger.addHandler ( file_handler )
-
-stream_handler = logging.StreamHandler()
-logger.addHandler ( stream_handler )
+logger = Logger( __name__ )
 
 SILENCE_CHECK_DURATION = 5 #seconds
 WAIT_TIME = 2 #seconds

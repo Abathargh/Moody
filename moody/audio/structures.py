@@ -10,7 +10,7 @@ import pyaudio
 import numpy as np
 from enum import Enum
 
-from .util import average, differences
+from utility import average, differences
 
 HUMAN_HEARING_LOWER_BOUND = 110 #Hz
 
@@ -158,7 +158,7 @@ class ChunkWindow ( list ) :
 
             if  zero_energy_frames  >= len( db_data ) * silence_rate :
                 
-                self.logger.debug ( "Silence" )
+                self.logger.debug ( "Audio type: Silence" )
                 return Type.SILENCE
             
             average_difference_energy = average ( differences( db_data ) )
@@ -167,10 +167,10 @@ class ChunkWindow ( list ) :
             
             if  round ( average_difference_energy, 1 ) <= music_threshold :
                 
-                self.logger.debug ( "Music" )
+                self.logger.debug ( "Audio type: Music" )
                 return Type.MUSIC
              
-            self.logger.debug ( "Speech/ Audible Noise" )
+            self.logger.debug ( "Audio type: Speech / Audible Noise" )
             return Type.SPEECH  
         
         else :

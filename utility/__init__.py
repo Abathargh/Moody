@@ -1,7 +1,9 @@
 '''
-Created on 25 set 2018
+Created on 29 set 2018
 
 @author: mar
+
+Utility package
 
 '''
 
