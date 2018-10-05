@@ -74,7 +74,7 @@ class MoodyAudio () :
         self.stream.start_stream()            
 
         max_energy_value = -float("inf")
-        
+        #min_energy_value = float("inf")
         #We count the frames recorded, and ignore the the ones read in the first 1.5 seconds
         #as they contain transient-like behaviour that we don't want to record
         
@@ -91,9 +91,16 @@ class MoodyAudio () :
                 
                     frame_energy = AudioChunk ( self.stream.read ( self.chunk_size ), self.format ).rms( db = True )
                     
+                    self.logger.debug( round ( frame_energy, 3 ) )
+                    
                     if frame_energy > max_energy_value :
                         
                         max_energy_value = frame_energy
+                    
+                    #if frame_energy < min_energy_value :
+                        
+                    #    min_energy_value = frame_energy
+                
             
             except :
                                 
@@ -106,7 +113,7 @@ class MoodyAudio () :
         self.stream.stop_stream()
         self.silence_threshold = max_energy_value
         self.logger.info( "Silence threshold = {} dB".format( self.silence_threshold )  )
-        
+
        
     def listen ( self ) :
         

@@ -4,6 +4,7 @@ import pyaudio
 from pkg_resources import Requirement, resource_filename
 
 import moody.audio as moody
+import moody.utility.plotting as plotting
 
 
 '''
@@ -70,6 +71,9 @@ if __name__ == "__main__" :
         
         raise Exception ( "Formato non valido!" )
     
+    full_data = []
+    audio_types = []
+    
     if VERBOSE :
                 
         moody.logger.console( True )
@@ -80,19 +84,23 @@ if __name__ == "__main__" :
     
     print ( "Recording audio to check the silence frames energy level, don't speak..." )
     moody.set_silence_threshold()
- 
+    
     while running :
         
         try :
             
             data_window = moody.listen()
-            data_type = data_window.audio_type( SILENCE_RATE, moody.silence_threshold, MUSIC_THRESHOLD )
+            data_type = data_window.audio_type ( SILENCE_RATE, moody.silence_threshold, MUSIC_THRESHOLD )
             
+            audio_types.append ( data_type )
+            full_data.append( data_window )
             
                         
         except KeyboardInterrupt :
         
             moody.close()
             running = False
-
+    
+    plotting.plot( full_data, audio_types, FORMAT )
+    
     print ( "\nBye!" )

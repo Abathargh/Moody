@@ -10,11 +10,11 @@ import pyaudio
 import numpy as np
 from enum import Enum
 
-from moody.utility import average, differences
+from ..utility import average, differences
 
 HUMAN_HEARING_LOWER_BOUND = 110 #Hz
 
-#This makes numpy raise exception instead of printing warnings in the case an error appears
+#This makes numpy raise exceptions instead of printing warnings in the case an error appears
 np.seterr( all = "raise" )
 
 logger = logging.getLogger( __name__ )
@@ -47,6 +47,8 @@ class AudioChunk ():
         
         self.energy = None
         self.freq = None
+        
+
         
         
         
@@ -82,7 +84,7 @@ class AudioChunk ():
                 self.logger.error ( "Log of a negative number attempted, value not expected = {}".format( rms ) )
             
             else:
-                
+
                 return rms_db
              
         return rms
@@ -153,25 +155,30 @@ class ChunkWindow ( list ) :
             
             db_data = [ chunk.rms ( db = True ) for chunk in self ]
             zero_energy_frames = [ 0 if rms_value < silence_threshold else rms_value for rms_value in db_data ].count ( 0 )
-                        
-            self.logger.debug ( "Zero energy frames: {} ".format( zero_energy_frames ) )
-
+            average_difference_energy = average ( differences( db_data ) )
+            average_energy_db = average ( db_data )
+            
             if  zero_energy_frames  >= len( db_data ) * silence_rate :
                 
-                self.logger.debug ( "Audio type: Silence" )
-                return Type.SILENCE
+                audio_type =  Type.SILENCE
             
-            average_difference_energy = average ( differences( db_data ) )
             
-            self.logger.debug ( "Average difference in energy: {}".format( average_difference_energy ) )
             
-            if  round ( average_difference_energy, 1 ) <= music_threshold :
+            elif  round ( average_difference_energy, 1 ) <= music_threshold :
                 
-                self.logger.debug ( "Audio type: Music" )
-                return Type.MUSIC
+                audio_type = Type.MUSIC
              
-            self.logger.debug ( "Audio type: Speech / Audible Noise" )
-            return Type.SPEECH  
+            else:
+                
+                audio_type = Type.SPEECH  
+                
+            self.logger.info( "Zero frames   |  Avg. energy  |    Avg. db     |  Audio type  " )
+            logger.debug (    "    {}            {}          {}           {} ".format ( zero_energy_frames, 
+                                                                     round ( average_difference_energy, 2),
+                                                                     round ( average_energy_db, 2 ),
+                                                                     audio_type ) )
+         
+            return audio_type
         
         else :
             
@@ -179,14 +186,8 @@ class ChunkWindow ( list ) :
             self.audio_type_strategy ( silence_rate, silence_threshold, music_threshold )    
         
     def to_binary_string( self ):
-        
-        string = []
-        
-        for chunk in self :
-            
-            string.append( chunk.frame )
-            
-        return b"".join( string )
+                    
+        return  b"".join( [ e.chunk for e in self ] )
 
 
 def pyaudio_to_numpy_format ( pyaudio_format ) :

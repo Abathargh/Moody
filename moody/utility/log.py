@@ -12,6 +12,7 @@ import datetime
 import logging
 import pathlib
 
+
 class Logger() :
     
     '''
@@ -25,6 +26,8 @@ class Logger() :
     '''
     
     def __init__ ( self, name ) :
+        
+        super().__init__()
         
         #Generate date and time of execution for logging purposes
         now = datetime.datetime.now()
