@@ -89,7 +89,7 @@ class AudioChunk ():
              
         return rms
     
-    def frequency ( self, framerate ) :
+    def frequency ( self, samplerate ) :
     
         '''
         
@@ -111,7 +111,7 @@ class AudioChunk ():
             y0, y1, y2 = np.log ( fftData[ which-1 : which+2 : ] )
             x1 = ( y2 - y0 ) * .5 / ( 2 * y1 - y2 - y0 )
             
-            freq = ( which + x1 ) * framerate / ( len( self.chunk ) / self.sample_width )
+            freq = ( which + x1 ) * samplerate / ( len( self.chunk ) / self.sample_width )
         
         except :
             
@@ -173,7 +173,7 @@ class ChunkWindow ( list ) :
                 audio_type = Type.SPEECH  
                 
             self.logger.info( "Zero frames   |  Avg. energy  |    Avg. db     |  Audio type  " )
-            logger.debug (    "    {}            {}          {}           {} ".format ( zero_energy_frames, 
+            self.logger.info (    "    {}            {}          {}           {} ".format ( zero_energy_frames,
                                                                      round ( average_difference_energy, 2),
                                                                      round ( average_energy_db, 2 ),
                                                                      audio_type ) )

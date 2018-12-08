@@ -1,4 +1,4 @@
-'''
+'''Cioè
 
 Created on 29 set 2018
 
@@ -32,7 +32,7 @@ def plot ( data_list, audio_types, audio_format ) :
     
     data = b"".join ( [ e.to_binary_string() for e in data_list ] )
     
-    types = [ { Type.SILENCE: "silence", Type.MUSIC: "music", Type.SPEECH: "speech"}[ t ] for t in audio_types ]
+    types = [ { Type.SILENCE: "s", Type.MUSIC: "m", Type.SPEECH: "a"}[ t ] for t in audio_types ]
             
     try:
             

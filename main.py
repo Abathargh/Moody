@@ -53,20 +53,17 @@ if __name__ == "__main__" :
     VERBOSE = args.verbose
     
     if args.format == "int32" :
-        
+
         FORMAT = pyaudio.paInt32
-    
-        
+
     elif args.format == "int16" :
         
         FORMAT = pyaudio.paInt16
-    
-        
+
     elif args.format == "int8" :
         
         FORMAT = pyaudio.paInt8
-    
-        
+
     else :
         
         raise Exception ( "Formato non valido!" )
