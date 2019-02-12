@@ -27,13 +27,17 @@ logger = Logger( __name__ )
 
 class Publisher ( Client ):
     
-    def __init__( self, residence, area, sensor_id ):
-        super().__init__( client_id = "Sensor_{}_{}_{}".format( residence, area, sensor_id ) )
+    def __init__( self, sensor_id ):
+        super().__init__( client_id = sensor_id )
         self.logger = logging.getLogger( __name__ )
         
     
-    #Overriding some event based callback Client methods
-     
+    '''
+    
+    Overriding some event based callback Client methods
+    
+    '''
+         
     @property
     def on_connect ( self ):
         self.logger.info("{} successfully connected to the broker!".format( str( self._client_id, "UTF-8" ) ) )
@@ -47,11 +51,20 @@ class Publisher ( Client ):
         self.logger.info("Message published with success!")
   
     
-    #Adding the retry feature to the connect method
+    '''
     
+    Adding the retry feature to the connect method
+    
+    '''
+        
     def connect ( self, host, port = 1883, keepalive = 60, bind_address = "" ):
-        #The sensor tries to connect to the broker
-        #if it's not successful it will retry for a maximum of MAX_ATTEMPTS times
+        
+        '''
+        
+        The sensor tries to connect to the broker
+        if it's not successful it will retry for a maximum of MAX_ATTEMPTS times
+        
+        '''
         
         attempts = 0
         
