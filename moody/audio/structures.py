@@ -14,8 +14,15 @@ from ..utility import average, differences
 
 HUMAN_HEARING_LOWER_BOUND = 110 #Hz
 
-#This makes numpy raise exceptions instead of printing warnings in the case an error appears
+'''
+
+This makes numpy raise exceptions instead of printing warnings in the case an error appears
+
+'''
+
 np.seterr( all = "raise" )
+
+formats = { pyaudio.paInt32 : np.int32, pyaudio.paInt16 : np.int16, pyaudio.paInt8 : np.int8 }
 
 logger = logging.getLogger( __name__ )
 
@@ -197,17 +204,9 @@ def pyaudio_to_numpy_format ( pyaudio_format ) :
     Quick function to convert the pyaudio formats to the numpy ones
    
     '''
-   
-    if pyaudio_format == pyaudio.paInt32 :
-   
-        return np.int32
        
-    elif pyaudio_format == pyaudio.paInt16 :
-       
-        return np.int16
-       
-    elif pyaudio_format == pyaudio.paInt8 :
-       
-        return np.int8
-               
-    logger.exception( "Invalid format!" )      
+    try :
+        return formats[pyaudio_format]
+    
+    except:
+        logger.exception( "Invalid format!" )      
