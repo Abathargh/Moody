@@ -20,7 +20,7 @@ concept is not part of the thesis work.
 
 RESIDENCE = 0
 AREA = 0
-SENSOR_ID = "A0"
+SENSOR_ID = 0
 DATA_TYPE = "audio"
 
 
@@ -118,7 +118,7 @@ if __name__ == "__main__" :
             publisher = Publisher( sensor_id )
             publisher.connect( BROKER_ADDRESS, port = BROKER_PORT )
             publisher.loop_start()
-            sensor_topic = "{}_{}_{}/{}".format( RESIDENCE, AREA, SENSOR_ID, DATA_TYPE )
+            sensor_topic = "{}_{}/{}/{}".format( RESIDENCE, AREA, DATA_TYPE, SENSOR_ID )
         
         except:
             running  = False

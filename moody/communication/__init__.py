@@ -40,11 +40,11 @@ class Publisher ( Client ):
          
     @property
     def on_connect ( self ):
-        self.logger.info("{} successfully connected to the broker!".format( str( self._client_id, "UTF-8" ) ) )
+        self.logger.info("{} successfully connected to the broker!".format( str( self._client_id ), "UTF-8" ) )
     
     @property
     def on_disconnect ( self ):
-        self.logger.info("{} disconnected from the broker!".format( str ( self._client_id, "UTF-8" ) ) )
+        self.logger.info("{} disconnected from the broker!".format( str ( self._client_id ), "UTF-8" ) )
     
     @property
     def on_publish ( self ):
