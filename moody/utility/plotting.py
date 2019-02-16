@@ -57,7 +57,7 @@ def plot ( data_list, audio_types, audio_format ) :
     
     except Exception as e :
         
-        print ( "Impossibile generare un grafico!" )
+        print ( "Couldn't plot a graph!" )
         print ( e )
         
     
