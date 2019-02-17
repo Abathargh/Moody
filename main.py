@@ -140,7 +140,7 @@ if __name__ == "__main__" :
             frame_type = data_window.audio_type ( SILENCE_RATE, moody.silence_threshold, MUSIC_THRESHOLD )
             
             if not OFFLINE :
-                publisher.publish ( topic = sensor_topic, payload = str ( frame_type ), qos = 0 )
+                publisher.publish ( topic = sensor_topic, payload = str (frame_type ), qos = 0 )
             
             audio_types.append ( frame_type )
             full_data.append( data_window )

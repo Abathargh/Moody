@@ -19,7 +19,7 @@ Connection settings
 
 '''
 MAX_ATTEMPTS = 5
-WAIT_TO_RECONNECT = 1 #sec
+WAIT_TO_RECONNECT = 5 #sec
 
 
 logger = Logger( __name__ )
@@ -40,11 +40,11 @@ class Publisher ( Client ):
          
     @property
     def on_connect ( self ):
-        self.logger.info("{} successfully connected to the broker!".format( str( self._client_id ), "UTF-8" ) )
+        self.logger.info("{} successfully connected to the broker!".format( self._client_id.decode(), "UTF-8" ) )
     
     @property
     def on_disconnect ( self ):
-        self.logger.info("{} disconnected from the broker!".format( str ( self._client_id ), "UTF-8" ) )
+        self.logger.info("{} disconnected from the broker!".format( self._client_id.decode(), "UTF-8" ) )
     
     @property
     def on_publish ( self ):

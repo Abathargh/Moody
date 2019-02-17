@@ -185,7 +185,7 @@ class ChunkWindow ( list ) :
                                                                      round ( average_energy_db, 2 ),
                                                                      audio_type ) )
          
-            return audio_type
+            return audio_type._value_
         
         else :
             
