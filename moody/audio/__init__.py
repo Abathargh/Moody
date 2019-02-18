@@ -145,9 +145,8 @@ class MoodyAudio () :
                 chunk = self.stream.read ( self.chunk_size )
                 data.append ( AudioChunk ( chunk , self.format ) ) 
             
-            except IOError as ex:
-                if ex[1] != pyaudio.paInputOverflowed:
-                    self.log.error("Error while reading audio data: {}".format( ex ) )
+            except Exception as e:
+                self.log.error("Error while reading audio data: {}".format( e ) )
                 data = '\x00' * self.chunk_size
             
             counter += 1
