@@ -146,7 +146,7 @@ class MoodyAudio () :
                 data.append ( AudioChunk ( chunk , self.format ) ) 
             
             except Exception as e:
-                self.log.error("Error while reading audio data: {}".format( e ) )
+                self.logger.error("Error while reading audio data: {}".format( e ) )
                 data = '\x00' * self.chunk_size
             
             counter += 1
