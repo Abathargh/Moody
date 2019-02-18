@@ -35,11 +35,6 @@ def plot ( data_list, audio_types, audio_format ) :
     types = [ { Type.SILENCE: "s", Type.MUSIC: "m", Type.SPEECH: "a"}[ t ] for t in audio_types ]
             
     try:
-            
-        import matplotlib as mpl
-
-        mpl.use("Agg")
-
         import matplotlib.pyplot as plt
         
         amplitude = np.frombuffer( data, numpy_format )  
