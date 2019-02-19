@@ -1,4 +1,4 @@
-'''Cioè
+'''
 
 Created on 29 set 2018
 
@@ -48,7 +48,7 @@ def plot ( data_list, audio_types, audio_format ) :
         formatted_date = "{}_{}_{}-{}_{}_{}".format( now.day, now.month, now.year, now.hour, now.minute, now.second )        
         
 
-        plt.savefig ( "./moody/graphs/{}".format ( formatted_date ) )
+        plt.savefig ( "/home/pi/Tesi/Moody/moody/graphs/{}".format ( formatted_date ) )
     
     except Exception as e :
         
