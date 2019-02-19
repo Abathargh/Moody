@@ -11,7 +11,7 @@ data contained in lists or data structures used in the other packages of the pro
 import numpy as np
 import pathlib
 import datetime
-from moody.audio.structures import pyaudio_to_numpy_format, Type
+from moody.audio.structures import pyaudio_to_numpy_format
 
 #For the time being it's just this function
 
@@ -32,7 +32,7 @@ def plot ( data_list, audio_types, audio_format ) :
     
     data = b"".join ( [ e.to_binary_string() for e in data_list ] )
     
-    types = [ { Type.SILENCE: "s", Type.MUSIC: "m", Type.SPEECH: "a"}[ t ] for t in audio_types ]
+    types = [ { 0: "s", 1: "a", 2: "m" }[ t ] for t in audio_types ]
             
     try:
         import matplotlib.pyplot as plt
