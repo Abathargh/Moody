@@ -56,7 +56,13 @@ class MoodyAudio () :
         
         self.logger.info ( "MoodyAudio on" )
         
-        self.silence_threshold = None
+        '''
+        
+        If set_silence_threshold is not called, this is the value used as a reference
+        for silence
+        
+        '''
+        self.silence_threshold = -55.4
     
     
     
