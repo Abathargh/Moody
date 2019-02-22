@@ -62,6 +62,8 @@ class ThreadedPlotter( Thread ):
                 
         try:
             import matplotlib.pyplot as plt
+            import matplotlib
+            matplotlib.use('Agg')
             
             amplitude = np.frombuffer( data, numpy_format )  
             chunks_beg = np.array( [ n * len ( data_list[0] ) * len ( data_list[0][0].chunk ) for n in range( len ( data_list ) ) ] )
@@ -77,8 +79,12 @@ class ThreadedPlotter( Thread ):
             plt.savefig ( "/home/pi/Tesi/Moody/moody/graphs/{}".format ( formatted_date ) )
         
         except Exception as e :
-            
             self.logger.error( "Couldn't plot a graph, {}".format( e ) )
+        
+        finally:
+            self.data = list()
+            self.types = list()
+            
             
         
         
