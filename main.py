@@ -5,7 +5,7 @@ from pkg_resources import Requirement, resource_filename
 
 import moody.audio as moody
 from moody.communication import Publisher
-from moody import communication
+from moody import communication, utility
 from moody.utility.plotting import ThreadedPlotter
 
 
@@ -84,9 +84,9 @@ if __name__ == "__main__" :
     
     if VERBOSE :
                 
-        moody.logger.console ( True )
-        communication.logger.console ( True )
-    
+        moody.logger.console( True )
+        communication.logger.console( True )
+        utility.plotting.logger.console( True )
     '''
     
     Initializing the audio stream and MQTT client
@@ -163,6 +163,7 @@ if __name__ == "__main__" :
                 publisher.disconnect()
 
             moody.close()
+            plotter.close()
             running = False
 
     
