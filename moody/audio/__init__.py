@@ -152,7 +152,6 @@ class MoodyAudio () :
             
             except Exception as e:
                 self.logger.error( "Error while reading audio data: {}".format( e ) )
-                continue
             
             counter += 1
             
