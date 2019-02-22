@@ -62,8 +62,7 @@ class MoodyAudio () :
         for silence
         
         '''
-        self.silence_threshold = -55.4
-    
+        self.silence_threshold = None    
     
     
     def set_silence_threshold ( self ) :
