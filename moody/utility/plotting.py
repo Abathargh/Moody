@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 
             
 
-TIME_BETWEEN_GRAPHS = 900
+TIME_BETWEEN_GRAPHS = 15
 
 logger = Logger( __name__ )
 
@@ -38,14 +38,19 @@ class ThreadedPlotter( Thread ):
         self.data = list()
         self.types = list()
         self.audio_format = audio_format
+        self.running = True
          
     def append( self, data, types ):
         self.data.append( data )
         self.types.append( types )
         
+    def close( self ):
+        self.running = False
+        
     def run( self ):
-        time.sleep( TIME_BETWEEN_GRAPHS )
-        self.plot( self.data, self.types, self.audio_format )
+        while( self.running ):
+            time.sleep( TIME_BETWEEN_GRAPHS )
+            self.plot( self.data, self.types, self.audio_format )
         
     def plot ( self, data_list, audio_types, audio_format ) :
         
@@ -79,15 +84,13 @@ class ThreadedPlotter( Thread ):
             
     
             plt.savefig ( "/home/pi/Tesi/Moody/moody/graphs/{}".format ( formatted_date ) )
+            self.logger.info( "{}.png succesfully generated!".format ( formatted_date ) )
         
         except Exception as e :
-            self.logger.error( "Couldn't plot a graph, {}".format( e ) )
+            self.logger.exception( "Couldn't plot a graph!" )
         
         finally:
             self.data = list()
             self.types = list()
-            
-            
-        
-        
+            plt.close()
         
