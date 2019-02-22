@@ -6,7 +6,7 @@ from pkg_resources import Requirement, resource_filename
 import moody.audio as moody
 from moody.communication import Publisher
 from moody import communication, utility
-from moody.utility.plotting import ThreadedPlotter
+#from moody.utility.plotting import ThreadedPlotter
 
 
 '''
@@ -80,7 +80,7 @@ if __name__ == "__main__" :
         
         raise Exception ( "Invalid format!" )
     
-    plotter = ThreadedPlotter( FORMAT )
+    #plotter = ThreadedPlotter( FORMAT )
     
     if VERBOSE :
                 
@@ -132,7 +132,7 @@ if __name__ == "__main__" :
     
     '''
             
-    plotter.start()        
+    #plotter.start()        
     
     '''
     
@@ -152,7 +152,7 @@ if __name__ == "__main__" :
             if not OFFLINE :
                 publisher.publish ( topic = sensor_topic, payload = str ( frame_type ), qos = 0 )
             
-            plotter.append ( data_window, frame_type )            
+            #plotter.append ( data_window, frame_type )            
                         
         except ( KeyboardInterrupt, ConnectionError ) as e :        
             
@@ -163,7 +163,7 @@ if __name__ == "__main__" :
                 publisher.disconnect()
 
             moody.close()
-            plotter.close()
+            #plotter.close()
             running = False
 
     
