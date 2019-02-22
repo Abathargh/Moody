@@ -5,8 +5,8 @@ from pkg_resources import Requirement, resource_filename
 
 import moody.audio as moody
 from moody.communication import Publisher
-import moody.utility.plotting as plotting
-from moody import communication
+from moody import communication, utility
+from moody.utility.plotting import ThreadedPlotter
 
 
 '''
@@ -38,7 +38,7 @@ if __name__ == "__main__" :
         raise ( "An error occurred while importing the default configuration!" )
     
     parser = argparse.ArgumentParser()
-    parser.add_argument ( "--format", "-f", help = "Sample format, can only be float32, int32, int16", type = str, default = config["Sampling"]["FORMAT"] )
+    parser.add_argument ( "--format", "-f", help = "Sample format, can only be int8, int16, int32", type = str, default = config["Sampling"]["FORMAT"] )
     parser.add_argument ( "--chunksize", "-s", help = "The dimension of a single audio chunk, the number of samples in a frame", type = int, default = int ( config["Sampling"]["CHUNK_SIZE"] ) )
     parser.add_argument ( "--samplerate", "-r", help = "The sample rate, defaults to 44100 Hz", type = int, default = int ( config["Sampling"]["SAMPLE_RATE"] ) )
     parser.add_argument ( "--windowsize", "-w", help = "The size of the audio analysis window, where every element is a frame", type = int, default = int ( config["Analysis"]["WINDOW_SIZE"] ) )
@@ -46,6 +46,8 @@ if __name__ == "__main__" :
     parser.add_argument ( "--musicthresh", "-mt", help = "The value under which the difference between peaks is small enough to be considered music", type = float, default = float ( config["Analysis"]["MUSIC_THRESHOLD"] ) )
     parser.add_argument ( "--verbose", "-v", help = "If the verbose option is selected, the program prints informations about the energy level of every analyzed frame", action = "store_true" )
     parser.add_argument ( "--offline", "-o", help = "If the offline option is selected, the data will be analyzed locally and not sent to the MQTT broker", action = "store_true" )
+    parser.add_argument ( "--silencethresh", "-st", help = "If the selencethresh option is selected, the program will set a silence threshold according to the environment noise that it captures while initializing", action = "store_true" )
+
     args = parser.parse_args()
     
     
@@ -57,6 +59,7 @@ if __name__ == "__main__" :
     MUSIC_THRESHOLD = args.musicthresh
     VERBOSE = args.verbose
     OFFLINE = args.offline
+    THRESHOLD_TO_READ = args.silencethresh
     BROKER_ADDRESS = config["Communication"]["BROKER_ADDRESS"]
     BROKER_PORT = int ( config["Communication"]["BROKER_PORT"] )
     
@@ -77,14 +80,13 @@ if __name__ == "__main__" :
         
         raise Exception ( "Invalid format!" )
     
-    full_data = []
-    audio_types = []
+    plotter = ThreadedPlotter( FORMAT )
     
     if VERBOSE :
                 
-        moody.logger.console ( True )
-        communication.logger.console ( True )
-    
+        moody.logger.console( True )
+        communication.logger.console( True )
+        utility.plotting.logger.console( True )
     '''
     
     Initializing the audio stream and MQTT client
@@ -100,7 +102,8 @@ if __name__ == "__main__" :
     '''
     
     print ( "Recording audio to check the silence frames energy level, don't speak..." )
-    moody.set_silence_threshold()
+    if THRESHOLD_TO_READ:
+        moody.set_silence_threshold()
     
     '''
     
@@ -122,7 +125,14 @@ if __name__ == "__main__" :
         
         except:
             running  = False
+    
+    '''
+    
+    Start the plotter thread
+    
+    '''
             
+    plotter.start()        
     
     '''
     
@@ -140,22 +150,22 @@ if __name__ == "__main__" :
             frame_type = data_window.audio_type ( SILENCE_RATE, moody.silence_threshold, MUSIC_THRESHOLD )
             
             if not OFFLINE :
-                publisher.publish ( topic = sensor_topic, payload = str (frame_type ), qos = 0 )
+                publisher.publish ( topic = sensor_topic, payload = str ( frame_type ), qos = 0 )
             
-            audio_types.append ( frame_type )
-            full_data.append( data_window )
-            
+            plotter.append ( data_window, frame_type )            
                         
-        except ( KeyboardInterrupt, ConnectionError ) :        
+        except ( KeyboardInterrupt, ConnectionError ) as e :        
             
             if not OFFLINE :
-                publisher.loop_stop()
+                if isinstance( e, ConnectionError ):
+                    publisher.reconnect()
+                    continue
                 publisher.disconnect()
 
             moody.close()
+            plotter.close()
             running = False
 
     
-    plotting.plot( full_data, audio_types, FORMAT )
     
     print ( "\nBye!" )
