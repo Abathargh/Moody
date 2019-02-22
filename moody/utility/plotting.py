@@ -69,7 +69,7 @@ class ThreadedPlotter( Thread ):
             plt.xticks( chunks_beg, types )       
             amplitude = amplitude /  np.iinfo( numpy_format ).max
             plt.plot ( amplitude )
-            pathlib.Path ( "./moody/graphs/" ).mkdir ( parents = True, exist_ok = True ) 
+            pathlib.Path ( "/home/pi/Tesi/Moody/moody/graphs/" ).mkdir ( parents = True, exist_ok = True ) 
             now = datetime.datetime.now()
             formatted_date = "{}_{}_{}-{}_{}_{}".format( now.day, now.month, now.year, now.hour, now.minute, now.second )        
             
