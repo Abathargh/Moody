@@ -59,6 +59,7 @@ if __name__ == "__main__" :
     MUSIC_THRESHOLD = args.musicthresh
     VERBOSE = args.verbose
     OFFLINE = args.offline
+    THRESHOLD_TO_READ = args.silencethresh
     BROKER_ADDRESS = config["Communication"]["BROKER_ADDRESS"]
     BROKER_PORT = int ( config["Communication"]["BROKER_PORT"] )
     
@@ -101,7 +102,8 @@ if __name__ == "__main__" :
     '''
     
     print ( "Recording audio to check the silence frames energy level, don't speak..." )
-    moody.set_silence_threshold()
+    if THRESHOLD_TO_READ:
+        moody.set_silence_threshold()
     
     '''
     
