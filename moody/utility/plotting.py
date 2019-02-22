@@ -17,7 +17,7 @@ from .log import Logger
 import logging
 from moody.audio.structures import pyaudio_to_numpy_format
 
-TIME_BETWEEN_GRAPHS = 0
+TIME_BETWEEN_GRAPHS = 900
 
 logger = Logger( __name__ )
 
