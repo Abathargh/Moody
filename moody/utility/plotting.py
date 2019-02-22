@@ -17,6 +17,10 @@ from .log import Logger
 import logging
 from moody.audio.structures import pyaudio_to_numpy_format
 
+import matplotlib
+matplotlib.use('Agg')
+            
+
 TIME_BETWEEN_GRAPHS = 900
 
 logger = Logger( __name__ )
@@ -62,8 +66,6 @@ class ThreadedPlotter( Thread ):
                 
         try:
             import matplotlib.pyplot as plt
-            import matplotlib
-            matplotlib.use('Agg')
             
             amplitude = np.frombuffer( data, numpy_format )  
             chunks_beg = np.array( [ n * len ( data_list[0] ) * len ( data_list[0][0].chunk ) for n in range( len ( data_list ) ) ] )
