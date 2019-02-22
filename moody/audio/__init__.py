@@ -76,7 +76,7 @@ class MoodyAudio () :
         max_energy_value = -float("inf")
         #min_energy_value = float("inf")
         #We count the frames recorded, and ignore the the ones read in the first 1.5 seconds
-        #as they contain transient-like behaviour that we don't want to record
+        #as they contain transient-like behavior that we don't want to record
         
         frame_counter = 0
         
@@ -102,12 +102,12 @@ class MoodyAudio () :
                     #    min_energy_value = frame_energy
                 
             
-            except :
+            except Exception as e:
                                 
                 self.stream.stop_stream()
                 self.audio.terminate()
                 
-                self.logger.exception (" An error occurred while reading the silence energy levels! ")
+                self.logger.error (" An error occurred while reading the silence energy levels, {} ".format( e ))
                 
                 
         self.stream.stop_stream()
@@ -147,7 +147,7 @@ class MoodyAudio () :
             
             except Exception as e:
                 self.logger.error( "Error while reading audio data: {}".format( e ) )
-                data = '\x00' * self.chunk_size
+                continue
             
             counter += 1
             
