@@ -19,6 +19,8 @@ from moody.audio.structures import pyaudio_to_numpy_format
 
 import matplotlib
 matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
             
 
 TIME_BETWEEN_GRAPHS = 900
@@ -65,8 +67,6 @@ class ThreadedPlotter( Thread ):
         types = [ { 0: "s", 1: "a", 2: "m" }[ t ] for t in audio_types ]
                 
         try:
-            import matplotlib.pyplot as plt
-            
             amplitude = np.frombuffer( data, numpy_format )  
             chunks_beg = np.array( [ n * len ( data_list[0] ) * len ( data_list[0][0].chunk ) for n in range( len ( data_list ) ) ] )
             types = np.array ( types )
