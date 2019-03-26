@@ -140,10 +140,10 @@ class MoodyAudio () :
 
             except Exception as e:
                 self.logger.error( "Error while reading audio data: {}".format( e ) )
-                data = '\x00' * self.chunk_size
+                chunk = '\x00' * self.chunk_size
 
             self.stream.stop_stream()
-            return data
+            return chunk
 
 
 
