@@ -29,14 +29,14 @@ if __name__ == "__main__" :
     config = configparser.ConfigParser()
 
     try :
-        
+
         if len ( config.read ( "./moody/moody.conf" ) ) == 0 :
             config.read ( resource_filename ( Requirement.parse ( "Moody" ), "moody.conf" ) )
-        
+
     except :
-        
+
         raise ( "An error occurred while importing the default configuration!" )
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument ( "--format", "-f", help = "Sample format, can only be int8, int16, int32", type = str, default = config["Sampling"]["FORMAT"] )
     parser.add_argument ( "--chunksize", "-s", help = "The dimension of a single audio chunk, the number of samples in a frame", type = int, default = int ( config["Sampling"]["CHUNK_SIZE"] ) )
@@ -49,8 +49,8 @@ if __name__ == "__main__" :
     parser.add_argument ( "--silencethresh", "-st", help = "If the selencethresh option is selected, the program will set a silence threshold according to the environment noise that it captures while initializing", action = "store_true" )
 
     args = parser.parse_args()
-    
-    
+
+
     FORMAT = None
     CHUNK_SIZE = args.chunksize
     SAMPLE_RATE = args.samplerate
@@ -62,100 +62,100 @@ if __name__ == "__main__" :
     THRESHOLD_TO_READ = args.silencethresh
     BROKER_ADDRESS = config["Communication"]["BROKER_ADDRESS"]
     BROKER_PORT = int ( config["Communication"]["BROKER_PORT"] )
-    
-        
+
+
     if args.format == "int32" :
 
         FORMAT = pyaudio.paInt32
 
     elif args.format == "int16" :
-        
+
         FORMAT = pyaudio.paInt16
 
     elif args.format == "int8" :
-        
+
         FORMAT = pyaudio.paInt8
 
     else :
-        
+
         raise Exception ( "Invalid format!" )
-    
-    plotter = ThreadedPlotter( FORMAT )
-    
+
+    #plotter = ThreadedPlotter( FORMAT )
+
     if VERBOSE :
-                
+
         moody.logger.console( True )
         communication.logger.console( True )
         utility.plotting.logger.console( True )
     '''
-    
+
     Initializing the audio stream and MQTT client
-    
+
     '''
     running = True
     moody = moody.MoodyAudio ( audio_format = FORMAT, chunk_size = CHUNK_SIZE, sample_rate = SAMPLE_RATE, window_size = WINDOW_SIZE )
-    
+
     '''
-    
+
     Checking for the silence threshold
-    
+
     '''
-    
+
     print ( "Recording audio to check the silence frames energy level, don't speak..." )
     if THRESHOLD_TO_READ:
         moody.set_silence_threshold()
-    
+
     '''
-    
+
     Initialize the publisher client and attempts to connect to the broker
-    
+
     '''
-    
+
     if not OFFLINE :
-        
+
         publisher = None
-        
-        try :    
-            
+
+        try :
+
             sensor_id = "Sensor_{}_{}_{}".format( RESIDENCE, AREA, SENSOR_ID )
             publisher = Publisher( sensor_id )
             publisher.connect( BROKER_ADDRESS, port = BROKER_PORT )
             publisher.loop_start()
             sensor_topic = "{}_{}/{}/{}".format( RESIDENCE, AREA, DATA_TYPE, SENSOR_ID )
-        
+
         except:
             running  = False
-    
+
     '''
-    
+
     Start the plotter thread
-    
+
     '''
-            
-    plotter.start()        
-    
+
+    #plotter.start()
+
     '''
-    
+
     The program is now connected to the broker via the publisher Client and has initialized an input
     audio stream. It can begin the sampling and analysis of the data.
-    
+
     '''
-           
-    
+
+
     while running :
-        
+
         try :
-            
+
             data_window = moody.listen()
             frame_type = data_window.audio_type ( SILENCE_RATE, moody.silence_threshold, MUSIC_THRESHOLD )
-            
+
             if not OFFLINE :
                 publisher.publish ( topic = sensor_topic, payload = str ( frame_type ), qos = 0 )
-            
-            plotter.append ( data_window, frame_type )            
-                        
-        except ( KeyboardInterrupt, ConnectionError ) as e :        
-            
+
+            #plotter.append ( data_window, frame_type )
+
+        except ( KeyboardInterrupt, ConnectionError ) as e :
+
             if not OFFLINE :
                 if isinstance( e, ConnectionError ):
                     publisher.reconnect()
@@ -163,9 +163,9 @@ if __name__ == "__main__" :
                 publisher.disconnect()
 
             moody.close()
-            plotter.close()
+            #plotter.close()
             running = False
 
-    
-    
+
+
     print ( "\nBye!" )
