@@ -148,7 +148,7 @@ if __name__ == "__main__" :
 
             data_window = moody.listen( single = True )
             if not OFFLINE :
-                publisher.publish ( topic = sensor_topic, payload = data_window.to_binary_string(), qos = 0 )
+                publisher.publish ( topic = sensor_topic, payload = data_window, qos = 0 )
 
             #plotter.append ( data_window, frame_type )
 
