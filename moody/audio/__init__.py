@@ -137,6 +137,7 @@ class MoodyAudio () :
 
             try:
                 chunk = self.stream.read ( self.chunk_size, exception_on_overflow = False )
+                self.logger.info("Chunk read")
 
             except Exception as e:
                 self.logger.error( "Error while reading audio data: {}".format( e ) )
