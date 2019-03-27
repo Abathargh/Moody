@@ -32,7 +32,7 @@ if __name__ == "__main__" :
     try :
 
         if len ( config.read ( "/home/pi/Tesi/Moody_nomist/Moody/moody/moody.conf" ) ) == 0 :
-            config.read ( resource_filename ( Requirement.parse ( "/home/pi/Tesi/Moody_nomist/Moody" ), "/home/pi/Tesi/Moody_nomist/Moody/moody/moody.conf" ) )
+            config.read ( resource_filename ( Requirement.parse ( "/home/pi/Tesi/Moody_nomist/Moody/" ), "/home/pi/Tesi/Moody_nomist/Moody/moody/moody.conf" ) )
 
     except :
 
