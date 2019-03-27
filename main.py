@@ -64,8 +64,8 @@ if __name__ == "__main__" :
     THRESHOLD_TO_READ = args.silencethresh
     PLOTTING = args.plotting
     BROKER_ADDRESS = config["Communication"]["BROKER_ADDRESS"]
-    BROKER_PORT = int ( config["Communication"]["BROKER_PORT"]
-    print(args)
+    BROKER_PORT = int ( config["Communication"]["BROKER_PORT"] )
+    print( args )
 
 
     if args.format == "int32" :
