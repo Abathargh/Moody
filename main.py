@@ -1,6 +1,7 @@
 import argparse
 import configparser
 import pyaudio
+from datetime import datetime
 from pkg_resources import Requirement, resource_filename
 
 import moody.audio as moody
@@ -141,28 +142,41 @@ if __name__ == "__main__" :
 
     '''
 
+    with open( "stats.log", mode="w+" ) as stats_dump:
 
-    while running :
+        while running :
 
-        try :
+            try :
+                start = datetime.now()
+                stats_dump.write("{} inizio acquisizione chunk\n".format( start ) )
+                data_window = moody.listen( single = True )
+                finish = datetime.now()
+                stats_dump.write("{} fine acquisizione chunk\n".format( finish ) )
+                stats_dump.write("t_acquisizione = {}\n".format( finish - start ) )
 
-            data_window = moody.listen( single = True )
-            if not OFFLINE :
-                publisher.publish ( topic = sensor_topic, payload = data_window, qos = 0 )
+                if not OFFLINE :
+                    start = datetime.now()
+                    stats_dump.write("{} inizio invio chunk\n".format( start ) )
+                    publisher.publish ( topic = sensor_topic, payload = data_window, qos = 0 )
+                    finish = datetime.now()
+                    stats_dump.write("{} fine invio chunk\n".format( finish ) )
+                    stats_dump.write("t_invio = {}\n".format( finish - start ) )
 
-            #plotter.append ( data_window, frame_type )
 
-        except ( KeyboardInterrupt, ConnectionError ) as e :
 
-            if not OFFLINE :
-                if isinstance( e, ConnectionError ):
-                    publisher.reconnect()
-                    continue
-                publisher.disconnect()
+                #plotter.append ( data_window, frame_type )
 
-            moody.close()
-            #plotter.close()
-            running = False
+            except ( KeyboardInterrupt, ConnectionError ) as e :
+
+                if not OFFLINE :
+                    if isinstance( e, ConnectionError ):
+                        publisher.reconnect()
+                        continue
+                    publisher.disconnect()
+
+                moody.close()
+                #plotter.close()
+                running = False
 
 
 
