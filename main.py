@@ -154,19 +154,24 @@ if __name__ == "__main__" :
             try :
                 start = datetime.now()
                 stats_dump.write("{} inizio acquisizione chunk\n".format( start ) )
+                print("{} inizio acquisizione chunk\n".format( start ) ))
                 data_window = moody.listen( single = True )
                 finish = datetime.now()
                 stats_dump.write("{} fine acquisizione chunk\n".format( finish ) )
                 stats_dump.write("t_acquisizione = {}\n".format( finish - start ) )
+                print("{} fine acquisizione chunk\n".format( finish ) )
+                print("t_acquisizione = {}\n".format( finish - start ) )
 
                 if not OFFLINE :
                     start = datetime.now()
                     stats_dump.write("{} inizio invio chunk\n".format( start ) )
+                    print("{} inizio invio chunk\n".format( start ) )
                     publisher.publish ( topic = sensor_topic, payload = data_window, qos = 0 )
                     finish = datetime.now()
                     stats_dump.write("{} fine invio chunk\n".format( finish ) )
                     stats_dump.write("t_invio = {}\n".format( finish - start ) )
-
+                    print("{} fine invio chunk\n".format( finish ) )
+                    print("t_invio = {}\n".format( finish - start ) )
 
 
                 #plotter.append ( data_window, frame_type )

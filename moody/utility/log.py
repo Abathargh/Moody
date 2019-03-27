@@ -33,13 +33,13 @@ class Logger() :
         now = datetime.datetime.now()
         formatted_date = "{}_{}_{}-{}_{}_{}".format( now.day, now.month, now.year, now.hour, now.minute, now.second )
 
-        pathlib.Path ( "/home/pi/Tesi/Moody_nomist/moody/logs/" ).mkdir ( parents = True, exist_ok = True )
+        pathlib.Path ( "/home/pi/Tesi/Moody_nomist/Moody/moody/logs/" ).mkdir ( parents = True, exist_ok = True )
 
 
         self.logger = logging.getLogger( name )
         self.logger.setLevel ( logging.DEBUG )
 
-        file_handler = logging.FileHandler ( "/home/pi/Tesi/Moody_nomist/moody/logs/{}-{}.log".format( name [ name.find ( "." ) + 1 : ],
+        file_handler = logging.FileHandler ( "/home/pi/Tesi/Moody_nomist/Moody/moody/logs/{}-{}.log".format( name [ name.find ( "." ) + 1 : ],
                                                                                 formatted_date ) )
         formatter = logging.Formatter ( "%(asctime)s - %(name)s - %(levelname)s : %(message)s" )
         file_handler.setFormatter( formatter )
