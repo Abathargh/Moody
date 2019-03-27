@@ -147,7 +147,7 @@ if __name__ == "__main__" :
 
 
 
-    with open( "stats.log", mode="w+" ) as stats_dump:
+    with open( "/home/pi/Tesi/Moody_nomist/stats.log", mode="w+" ) as stats_dump:
 
         while running :
 
