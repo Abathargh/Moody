@@ -105,9 +105,9 @@ if __name__ == "__main__" :
 
     '''
 
-    print ( "Recording audio to check the silence frames energy level, don't speak..." )
-    if THRESHOLD_TO_READ:
-        moody.set_silence_threshold()
+    #print ( "Recording audio to check the silence frames energy level, don't speak..." )
+    #if THRESHOLD_TO_READ:
+    #    moody.set_silence_threshold()
 
     '''
 
