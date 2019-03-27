@@ -1,7 +1,6 @@
 import argparse
 import configparser
 import pyaudio
-from datetime import datetime
 from pkg_resources import Requirement, resource_filename
 
 import moody.audio as moody
@@ -31,8 +30,8 @@ if __name__ == "__main__" :
 
     try :
 
-        if len ( config.read ( "./moody/moody.conf" ) ) == 0 :
-            config.read ( resource_filename ( Requirement.parse ( "Moody" ), "moody.conf" ) )
+        if len ( config.read ( "/home/pi/Tesi/Moody/moody/moody.conf" ) ) == 0 :
+            config.read ( resource_filename ( Requirement.parse ( "/home/pi/Tesi/Moody" ), "/home/pi/Tesi/Moody/moody/moody.conf" ) )
 
     except :
 
@@ -48,6 +47,7 @@ if __name__ == "__main__" :
     parser.add_argument ( "--verbose", "-v", help = "If the verbose option is selected, the program prints informations about the energy level of every analyzed frame", action = "store_true" )
     parser.add_argument ( "--offline", "-o", help = "If the offline option is selected, the data will be analyzed locally and not sent to the MQTT broker", action = "store_true" )
     parser.add_argument ( "--silencethresh", "-st", help = "If the selencethresh option is selected, the program will set a silence threshold according to the environment noise that it captures while initializing", action = "store_true" )
+    parser.add_argument ( "--plotting", "-p", help = "If the plotting option is selected, a subthread will generate plots of the captured audio every 15 seconds", action = "store_true" )
 
     args = parser.parse_args()
 
@@ -61,6 +61,7 @@ if __name__ == "__main__" :
     VERBOSE = args.verbose
     OFFLINE = args.offline
     THRESHOLD_TO_READ = args.silencethresh
+    PLOTTING = args.plotting
     BROKER_ADDRESS = config["Communication"]["BROKER_ADDRESS"]
     BROKER_PORT = int ( config["Communication"]["BROKER_PORT"] )
 
@@ -81,7 +82,8 @@ if __name__ == "__main__" :
 
         raise Exception ( "Invalid format!" )
 
-    #plotter = ThreadedPlotter( FORMAT )
+    if PLOTTING:
+        plotter = ThreadedPlotter( FORMAT )
 
     if VERBOSE :
 
@@ -133,7 +135,8 @@ if __name__ == "__main__" :
 
     '''
 
-    #plotter.start()
+    if PLOTTING:
+        plotter.start()
 
     '''
 
@@ -141,6 +144,8 @@ if __name__ == "__main__" :
     audio stream. It can begin the sampling and analysis of the data.
 
     '''
+
+
 
     with open( "stats.log", mode="w+" ) as stats_dump:
 
