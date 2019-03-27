@@ -21,80 +21,75 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-            
+
 
 TIME_BETWEEN_GRAPHS = 15
 
 logger = Logger( __name__ )
 
 class ThreadedPlotter( Thread ):
-    
-    
-    
+
+
+
     def __init__( self, audio_format ):
         super().__init__()
-        
+
         self.logger = logging.getLogger( __name__ )
         self.data = list()
         self.types = list()
         self.audio_format = audio_format
         self.running = True
-         
+
     def append( self, data, types ):
         self.data.append( data )
         self.types.append( types )
-        
+
     def close( self ):
         self.running = False
-        
+
     def run( self ):
         while( self.running ):
             time.sleep( TIME_BETWEEN_GRAPHS )
             self.plot( self.data, self.types, self.audio_format )
-        
+
     def plot ( self, data_list, audio_types, audio_format ) :
-        
+
         '''
-        
+
         plot ( data_list, audio_format )
-        
+
         data_list is a list and audio format is of the pyaudio formats. The function works for normal lists
-        but it's thought for ChunkWindow, in order to generate graphs with lots of details thanks to 
-        the various methods of the ChunkWindow and AudioChunk classes. 
-        
+        but it's thought for ChunkWindow, in order to generate graphs with lots of details thanks to
+        the various methods of the ChunkWindow and AudioChunk classes.
+
         '''
-        
+
         numpy_format = pyaudio_to_numpy_format( audio_format )
-            
-        
+
+
         data = b"".join ( [ e.to_binary_string() for e in data_list ] )
-        
+
         types = [ { 0: "s", 1: "a", 2: "m" }[ t ] for t in audio_types ]
-                
+
         try:
-            amplitude = np.frombuffer( data, numpy_format )  
+            amplitude = np.frombuffer( data, numpy_format )
             chunks_beg = np.array( [ n * len ( data_list[0] ) * len ( data_list[0][0].chunk ) for n in range( len ( data_list ) ) ] )
             types = np.array ( types )
-            plt.xticks( chunks_beg, types )       
+            plt.xticks( chunks_beg, types )
             amplitude = amplitude /  np.iinfo( numpy_format ).max
             plt.plot ( amplitude )
-            pathlib.Path ( "./moody/graphs/" ).mkdir ( parents = True, exist_ok = True ) 
+            pathlib.Path ( "/home/pi/Tesi/Moody_nomist/moody/graphs/" ).mkdir ( parents = True, exist_ok = True ) 
             now = datetime.datetime.now()
-            formatted_date = "{}_{}_{}-{}_{}_{}".format( now.day, now.month, now.year, now.hour, now.minute, now.second )        
-            
-    
-            plt.savefig ( "./moody/graphs/{}".format ( formatted_date ) )
+            formatted_date = "{}_{}_{}-{}_{}_{}".format( now.day, now.month, now.year, now.hour, now.minute, now.second )
+
+
+            plt.savefig ( "/home/pi/Tesi/Moody_nomist/moody/graphs/{}".format ( formatted_date ) )
             self.logger.info( "{}.png succesfully generated!".format ( formatted_date ) )
-        
+
         except Exception as e :
             self.logger.exception( "Couldn't plot a graph!" )
-        
+
         finally:
             self.data = list()
             self.types = list()
             plt.close()
-            
-            
-        
-        
-        
