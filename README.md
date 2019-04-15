@@ -1,4 +1,4 @@
-![DIMES](https://www.dimes.unical.it/sites/default/files/logo_dimes_Q.png =300x250)
+![DIMES](https://www.dimes.unical.it/sites/default/files/logo_dimes_Q.png)
 
 Thesis: A study on technological solutions for the analysis and classification of human activities based on M2M communication systems and models
 
